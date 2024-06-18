@@ -1,9 +1,12 @@
-fastapi
+alembic
+python-dotenv
+pyaml-env
+psycopg2-binary
+numpy
+fastapi[all]
 pydantic
 SQLAlchemy
 bcrypt
 uvicorn
 black
 python-jose
-python-dotenv
-psycopg2-binary
