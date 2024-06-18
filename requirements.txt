@@ -1,0 +1,7 @@
+alembic
+python-dotenv
+pyaml-env
+psycopg2-binary
+SQLalchemy
+numpy
+fastapi[all]
