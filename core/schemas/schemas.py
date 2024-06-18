@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+import uuid
 
 
 class LoginRequest(BaseModel):
@@ -20,7 +21,7 @@ class UserCreate(UserBase):
 
 class AuthenticatedUser(BaseModel):
     email: str | None = None
-    id: int
+    id: uuid.UUID
     name: str | None = None
     surname: str | None = None
     has_logged_in: bool
