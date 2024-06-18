@@ -31,7 +31,7 @@ def login(request: schemas.LoginRequest, db: Session):
     access_token = create_access_token(
         data={
             "sub": user.email,
-            "id": user.id,
+            "id": str(user.id),
             "name": user.name,
             "surname": user.surname,
         }
