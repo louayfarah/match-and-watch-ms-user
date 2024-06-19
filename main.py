@@ -1,3 +1,5 @@
+# TODO: Initialize packages in __init__.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
