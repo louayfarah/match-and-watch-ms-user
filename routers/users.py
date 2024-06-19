@@ -1,7 +1,6 @@
 from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
-
-from core.databases.postgres.postgres import get_db
+from dependencies import get_db
 from util import users
 from core.schemas import schemas
 
