@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt
 
-from .const import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_ALGORITHM, SECRET_KEY
+from config import Config
+
+conf = Config()
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -10,8 +12,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+            minutes=conf.get_access_token_expire_minutes()
         )
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode, conf.get_secret_key(), algorithm=conf.get_jwt_algorithm()
+    )
     return encoded_jwt

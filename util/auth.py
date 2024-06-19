@@ -5,12 +5,16 @@ from fastapi.exceptions import HTTPException
 from fastapi import status, Security
 
 from ..core.schemas import schemas
-from .const import JWT_ALGORITHM, SECRET_KEY
+from config import Config
+
+conf = Config()
 
 
 def get_user_from_token(token: str):
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, conf.get_secret_key(), algorithms=[conf.get_jwt_algorithm()]
+        )
         user_id = payload.get("id")
         if user_id is None:
             raise HTTPException(

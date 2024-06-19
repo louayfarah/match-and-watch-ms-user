@@ -5,6 +5,7 @@ from patterns import Singleton
 
 load_dotenv()
 
+
 class Config(metaclass=Singleton):
     def __init__(self) -> None:
         """
@@ -16,5 +17,13 @@ class Config(metaclass=Singleton):
             print("Warning: Configuration file was not found, hence not parsed!")
 
     def get_database_connection_string(self):
-        return self.conf['db']['postgres']['url']
-        
+        return self.conf["db"]["postgres"]["url"]
+
+    def get_jwt_algorithm(self):
+        return self.conf["auth"]["jwt"]["algorithm"]
+
+    def get_secret_key(self):
+        return self.conf["auth"]["jwt"]["secret"]
+
+    def get_access_token_expire_minutes(self):
+        return int(self.conf["auth"]["token"]["expiration"])
