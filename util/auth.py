@@ -1,10 +1,10 @@
 from jose import JWTError, jwt
-
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.exceptions import HTTPException
-from fastapi import status, Security
+from fastapi import status
 
-from ..core.schemas import schemas
+import core
+import core.schemas
+import core.schemas.schemas
 from config import Config
 
 conf = Config()
@@ -22,18 +22,8 @@ def get_user_from_token(token: str):
             )
         payload["email"] = payload.pop("sub")
         payload["has_logged_in"] = True
-        return schemas.AuthenticatedUser(**payload)
+        return core.schemas.schemas.AuthenticatedUser(**payload)
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
-
-
-def get_user(
-    authorization: HTTPAuthorizationCredentials = Security(HTTPBearer()),
-) -> schemas.AuthenticatedUser:
-    if authorization.scheme.lower() != "bearer":
-        raise HTTPException(status_code=401, detail="Invalid authentication scheme")
-
-    token = authorization.credentials
-    return get_user_from_token(token)
