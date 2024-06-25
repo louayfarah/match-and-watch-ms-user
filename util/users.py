@@ -21,8 +21,6 @@ def login(request: schemas.LoginRequest, db: Session):
 
     hashed_password = user.password.encode()
     provided_password = user_password.encode()
-    print(hashed_password)
-    print(provided_password)
 
     if not bcrypt.checkpw(provided_password, hashed_password):
         raise HTTPException(
