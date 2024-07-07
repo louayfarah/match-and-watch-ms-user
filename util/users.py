@@ -15,17 +15,17 @@ def login(request: schemas.LoginRequest, db: Session):
     user = crud.get_user_by_email(db, email=user_email)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="email and password combination is incorrect",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
         )
 
-    password = user_password.encode()
-    salt = crud.get_salt(user).encode()
-    hashed = bcrypt.hashpw(password, salt)
-    if user.password != hashed.decode():
+    hashed_password = user.password.encode()
+    provided_password = user_password.encode()
+
+    if not bcrypt.checkpw(provided_password, hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="email and password combination is incorrect",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
         )
 
     access_token = create_access_token(
@@ -55,4 +55,12 @@ def register(user: schemas.UserCreate, db: Session):
     )
     db.add(new_user)
     db.commit()
-    return "user has been registerd "
+    access_token = create_access_token(
+        data={
+            "sub": new_user.email,
+            "id": str(new_user.id),
+            "name": new_user.name,
+            "surname": new_user.surname,
+        }
+    )
+    return {"token": access_token}
