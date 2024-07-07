@@ -9,3 +9,9 @@ def get_user_by_email(db: Session, email: str):
 
 def get_salt(user: tables.User):
     return user.salt
+
+
+def get_preferences_by_id(db: Session, user_id: int):
+    return db.query(tables.UserPreferences).filter(
+        tables.UserPreferences.user_id == user_id
+    ).first()

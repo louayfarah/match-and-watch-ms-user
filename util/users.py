@@ -64,3 +64,31 @@ def register(user: schemas.UserCreate, db: Session):
         }
     )
     return {"token": access_token}
+
+
+def create_user_preferences(
+    preferences: schemas.UserPreferencesCreate,
+    user: schemas.AuthenticatedUser,
+    db: Session,
+):
+    # Check if the user already has preferences
+    existing_preferences = crud.get_preferences_by_id(db, user.id)
+
+    if existing_preferences:
+        for key, value in preferences.dict().items():
+            setattr(existing_preferences, key, value)
+        db.commit()
+        return existing_preferences
+    else:
+        db_preferences = tables.UserPreferences(user_id=user.id, **preferences.dict())
+        db.add(db_preferences)
+        db.commit()
+        return db_preferences
+
+
+def get_user_preferences(user: schemas.AuthenticatedUser, db: Session):
+    user_preferences = crud.get_preferences_by_id(db, user.id)
+    if not user_preferences:
+        raise HTTPException(status_code=404, detail="User preferences not found")
+
+    return user_preferences
