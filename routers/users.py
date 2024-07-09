@@ -55,3 +55,18 @@ def get_token(
             status_code=404, detail="Refresh token not found for the user"
         )
     return refresh_token
+@router.post("/api/user/preferences/", response_model=schemas.UserPreferences)
+def create_user_preferences(
+    preferences: schemas.UserPreferencesCreate,
+    user: schemas.AuthenticatedUser = Depends(dependencies.get_user),
+    db: Session = Depends(get_db)
+):
+    return users.create_user_preferences(preferences, user, db)
+
+
+@router.get("/api/user/preferences/", response_model=schemas.UserPreferences)
+def get_user_preferences(
+    db: Session = Depends(get_db),
+    user: schemas.AuthenticatedUser = Depends(dependencies.get_user)
+):
+    return users.get_user_preferences(user, db)

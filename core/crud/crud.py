@@ -50,3 +50,9 @@ def get_refresh_token(db: Session, refresh_token: str):
     if not res:
         return None
     return res
+
+
+def get_preferences_by_id(db: Session, user_id: int):
+    return db.query(tables.UserPreferences).filter(
+        tables.UserPreferences.user_id == user_id
+    ).first()
