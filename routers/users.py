@@ -45,7 +45,7 @@ def regenerate_access_token(
         raise HTTPException(detail="Invalid refresh token", status_code=400)
 
 
-@router.get("/get_token")
+@router.get("/get_token", include_in_schema=False)
 def get_token(
     user: schemas.AuthenticatedUser = Depends(get_user), db: Session = Depends(get_db)
 ):
@@ -55,6 +55,8 @@ def get_token(
             status_code=404, detail="Refresh token not found for the user"
         )
     return refresh_token
+
+
 @router.post("/api/user/preferences/", response_model=schemas.UserPreferences)
 def create_user_preferences(
     preferences: schemas.UserPreferencesCreate,
