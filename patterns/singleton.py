@@ -1,11 +1,15 @@
 """
 Metaclass for singleton
 """
+
+
 class Singleton(type):
     """
     It will be used as a metaclass to create singleton class
     """
+
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         """
         method docstring

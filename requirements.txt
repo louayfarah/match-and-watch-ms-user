@@ -10,3 +10,4 @@ bcrypt
 uvicorn
 black
 python-jose
+PyJWT

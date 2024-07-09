@@ -25,3 +25,8 @@ class AuthenticatedUser(BaseModel):
     name: str | None = None
     surname: str | None = None
     has_logged_in: bool
+
+
+class AccessToken(BaseModel):
+    access_token: str
+    expires_in: int
