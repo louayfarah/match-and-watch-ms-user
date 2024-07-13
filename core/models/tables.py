@@ -17,6 +17,9 @@ class User(Base):
     refresh_tokens = relationship(
         "RefreshToken", backref="user", cascade="all,delete-orphan"
     )
+    preferences = relationship(
+        "UserPreferences", backref="user", cascade="all,delete-orphan"
+    )
 
 
 class RefreshToken(Base):
@@ -25,9 +28,6 @@ class RefreshToken(Base):
     refresh_tokens = Column(String, unique=True, index=True)
     expires_at = Column(DateTime)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), index=True)
-    preferences = relationship(
-        "UserPreferences", backref="user", cascade="all,delete-orphan"
-    )
 
 
 class UserPreferences(Base):
