@@ -27,3 +27,6 @@ class Config(metaclass=Singleton):
 
     def get_access_token_expire_minutes(self):
         return int(self.conf["auth"]["token"]["expiration"])
+
+    def get_refresh_token_expire_minutes(self):
+        return int(self.conf["auth"]["refresh_token"]["expiration"])

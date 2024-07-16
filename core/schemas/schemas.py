@@ -29,6 +29,11 @@ class AuthenticatedUser(BaseModel):
     has_logged_in: bool
 
 
+class AccessToken(BaseModel):
+    access_token: str
+    expires_in: int
+
+    
 class UserPreferences(BaseModel):
     genres: List[str]
     favorite_type: str

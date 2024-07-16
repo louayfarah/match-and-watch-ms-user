@@ -2,6 +2,7 @@ import bcrypt
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 
 from core.crud import crud
 from core.schemas import schemas
@@ -28,15 +29,15 @@ def login(request: schemas.LoginRequest, db: Session):
             detail="Incorrect email or password",
         )
 
-    access_token = create_access_token(
+    return create_access_token(
+        db,
         data={
             "sub": user.email,
             "id": str(user.id),
             "name": user.name,
             "surname": user.surname,
-        }
+        },
     )
-    return {"token": access_token}
 
 
 def register(user: schemas.UserCreate, db: Session):
@@ -55,15 +56,27 @@ def register(user: schemas.UserCreate, db: Session):
     )
     db.add(new_user)
     db.commit()
-    access_token = create_access_token(
+    return create_access_token(
+        db,
         data={
             "sub": new_user.email,
             "id": str(new_user.id),
             "name": new_user.name,
             "surname": new_user.surname,
-        }
+        },
     )
-    return {"token": access_token}
+
+
+def logout(db: Session, refresh_token: str):
+    res = crud.get_refresh_token(db, refresh_token)
+    if res is None:
+        raise HTTPException(status_code=400, detail="Invalid refresh token")
+    db.delete(res)
+    db.commit()
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"detail": "Successfully logged out"}
+    )
 
 
 def create_user_preferences(
