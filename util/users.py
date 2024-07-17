@@ -2,6 +2,7 @@ import bcrypt
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from fastapi.responses import JSONResponse
 
 from core.crud import crud
 from core.schemas import schemas
@@ -15,28 +16,28 @@ def login(request: schemas.LoginRequest, db: Session):
     user = crud.get_user_by_email(db, email=user_email)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="email and password combination is incorrect",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
         )
 
-    password = user_password.encode()
-    salt = crud.get_salt(user).encode()
-    hashed = bcrypt.hashpw(password, salt)
-    if user.password != hashed.decode():
+    hashed_password = user.password.encode()
+    provided_password = user_password.encode()
+
+    if not bcrypt.checkpw(provided_password, hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="email and password combination is incorrect",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
         )
 
-    access_token = create_access_token(
+    return create_access_token(
+        db,
         data={
             "sub": user.email,
             "id": str(user.id),
             "name": user.name,
             "surname": user.surname,
-        }
+        },
     )
-    return {"token": access_token}
 
 
 def register(user: schemas.UserCreate, db: Session):
@@ -55,4 +56,52 @@ def register(user: schemas.UserCreate, db: Session):
     )
     db.add(new_user)
     db.commit()
-    return "user has been registerd "
+    return create_access_token(
+        db,
+        data={
+            "sub": new_user.email,
+            "id": str(new_user.id),
+            "name": new_user.name,
+            "surname": new_user.surname,
+        },
+    )
+
+
+def logout(db: Session, refresh_token: str):
+    res = crud.get_refresh_token(db, refresh_token)
+    if res is None:
+        raise HTTPException(status_code=400, detail="Invalid refresh token")
+    db.delete(res)
+    db.commit()
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"detail": "Successfully logged out"}
+    )
+
+
+def create_user_preferences(
+    preferences: schemas.UserPreferencesCreate,
+    user: schemas.AuthenticatedUser,
+    db: Session,
+):
+    # Check if the user already has preferences
+    existing_preferences = crud.get_preferences_by_id(db, user.id)
+
+    if existing_preferences:
+        for key, value in preferences.dict().items():
+            setattr(existing_preferences, key, value)
+        db.commit()
+        return existing_preferences
+    else:
+        db_preferences = tables.UserPreferences(user_id=user.id, **preferences.dict())
+        db.add(db_preferences)
+        db.commit()
+        return db_preferences
+
+
+def get_user_preferences(user: schemas.AuthenticatedUser, db: Session):
+    user_preferences = crud.get_preferences_by_id(db, user.id)
+    if not user_preferences:
+        raise HTTPException(status_code=404, detail="User preferences not found")
+
+    return user_preferences

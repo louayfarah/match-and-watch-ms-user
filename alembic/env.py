@@ -63,8 +63,8 @@ def run_migrations_online() -> None:
 
     """
     conf = Config()
-    configdict=config.get_section(config.config_ini_section)
-    configdict.update({"sqlalchemy.url":conf.get_database_connection_string()})
+    configdict = config.get_section(config.config_ini_section)
+    configdict.update({"sqlalchemy.url": conf.get_database_connection_string()})
     connectable = engine_from_config(
         configdict,
         prefix="sqlalchemy.",
