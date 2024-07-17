@@ -29,7 +29,7 @@ def logout(
     return users.logout(db, refresh_token)
 
 
-@router.post("/refresh-token", response_model=schemas.AccessToken)
+@router.post("/api/refresh-token", response_model=schemas.AccessToken)
 def regenerate_access_token(
     refresh_token: Annotated[str, Body(embed=True)], db: Session = Depends(get_db)
 ):
@@ -61,14 +61,13 @@ def get_token(
 def create_user_preferences(
     preferences: schemas.UserPreferencesCreate,
     user: schemas.AuthenticatedUser = Depends(get_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     return users.create_user_preferences(preferences, user, db)
 
 
 @router.get("/api/user/preferences/", response_model=schemas.UserPreferences)
 def get_user_preferences(
-    db: Session = Depends(get_db),
-    user: schemas.AuthenticatedUser = Depends(get_user)
+    db: Session = Depends(get_db), user: schemas.AuthenticatedUser = Depends(get_user)
 ):
     return users.get_user_preferences(user, db)
