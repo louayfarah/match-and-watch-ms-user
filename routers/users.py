@@ -1,8 +1,9 @@
 import jwt
 from typing import Annotated
-
+import uuid
 from fastapi import Depends, APIRouter, HTTPException, Body
 from sqlalchemy.orm import Session
+from fastapi.security import HTTPAuthorizationCredentials
 from dependencies import get_db, get_user
 from util import users
 from core.schemas import schemas
@@ -71,3 +72,9 @@ def get_user_preferences(
     db: Session = Depends(get_db), user: schemas.AuthenticatedUser = Depends(get_user)
 ):
     return users.get_user_preferences(user, db)
+
+
+@router.post("/check/user/token")
+def check_user_token(token: str =Body(...) ):
+    authorization = HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
+    return get_user(authorization)
