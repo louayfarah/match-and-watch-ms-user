@@ -29,8 +29,7 @@ services:
       POSTGRES_DB: ms-user
     networks:
       - match_and_watch
-      
+
 networks:
   match_and_watch:
     external: true
-
