@@ -2,10 +2,13 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 
 from routers import users
 from core.databases.postgres.postgres import engine
 from core.models import tables
+
+load_dotenv()
 
 app = FastAPI()
 tables.Base.metadata.create_all(bind=engine)
